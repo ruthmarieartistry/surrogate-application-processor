@@ -10,7 +10,6 @@
 
 // For Vercel deployment
 export const config = {
-  runtime: 'nodejs18.x',
   maxDuration: 30 // 30 second timeout for API calls
 };
 
