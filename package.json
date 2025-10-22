@@ -1,0 +1,12 @@
+{
+  "name": "surrogate-application-processor",
+  "version": "1.0.0",
+  "description": "AI-powered surrogate application processor using Claude API",
+  "type": "module",
+  "scripts": {
+    "test": "node test-function.js"
+  },
+  "keywords": ["surrogate", "ai", "claude", "zoho"],
+  "author": "Alcea Surrogacy",
+  "license": "MIT"
+}
