@@ -126,7 +126,7 @@ function buildClaudePrompt(applicationText) {
 CRITICAL RULES:
 1. BE CONCISE - Only mention what's notable or concerning
 2. Spell out ALL medical abbreviations completely (GD → Gestational Diabetes, C/S → Cesarean section, etc.)
-3. Use [WARNING] for concerns/flags, [GOLD STAR] for exceptional items (NO EMOJI CHARACTERS)
+3. Use (!!) for concerns/flags, *** GOLD STAR *** for exceptional items (use simple ASCII only)
 4. If section is clean/unremarkable, just say "Clean" or "Nothing of note"
 5. Return valid JSON with formatted_summary, extracted_fields, AND is_gold_star boolean
 
@@ -163,34 +163,34 @@ GOLD STAR CRITERIA (all must be true):
 THE FORMATTED SUMMARY MUST USE THIS CONCISE TEMPLATE:
 
 ==============================================================================
-CANDIDATE APPLICATION SUMMARY [ADD "[GOLD STAR]" if is_gold_star=true]
+CANDIDATE APPLICATION SUMMARY [ADD "*** GOLD STAR ***" if is_gold_star=true]
 Generated: ${today}
 ==============================================================================
 
-PERSONAL
+>> PERSONAL
 Name: [First Last] ([Preferred name if different])
 Age: [##] | BMI: [##.#] | [State] | [Relationship Status] | [Employment if notable]
 Surrogate Experience: [Either "Experienced Surrogate: [#] journeys" OR "First-time Surrogate"]
 
-PREGNANCY HISTORY
+>> PREGNANCY HISTORY
 [#] Pregnancies | [#] Deliveries | [#] Cesarean sections
 Anything of note: [Only mention if there are: miscarriages, abortions, preterm deliveries, significant complications. If clean history of full-term vaginal births, just say "Clean pregnancy history"]
 
-MEDICAL HISTORY
+>> MEDICAL HISTORY
 [If completely clean: "Clean - no medical conditions of note, non-smoker, non-vaper"]
-[Otherwise list ONLY notable items with [WARNING] for concerns:
-[WARNING] [Condition - medication/status]
-[WARNING] [Smoking/vaping if applicable]
-[WARNING] [Dietary restrictions if notable]]
+[Otherwise list ONLY notable items with (!!) for concerns:
+(!!) [Condition - medication/status]
+(!!) [Smoking/vaping if applicable]
+(!!) [Dietary restrictions if notable]]
 
-HOUSEHOLD
+>> HOUSEHOLD
 [Write 1-2 sentences: "[Home type] with [#] adults and [#] children (ages). [Smoke-free status]. [Pet summary if any]. [Firearm status if present and concerning]"]
 
-OB/GYN
+>> OB/GYN
 Birth Control: [Type or None]
 Anything of note: [ONLY mention breastfeeding if currently breastfeeding, or other concerns. Otherwise omit this line]
 
-BACKGROUND
+>> BACKGROUND
 [Either "Clean" OR briefly note concerns for self/partner]
 
 ==============================================================================
