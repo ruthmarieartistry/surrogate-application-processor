@@ -198,7 +198,7 @@ Anything of note: [ONLY mention breastfeeding if currently breastfeeding, or oth
 BACKGROUND
 [Either "Clean" OR briefly note concerns for self/partner]
 
-==============================================================================
+________________________________________________________________________________
 
 MEDICAL ABBREVIATIONS TO SPELL OUT:
 - GD/GDM → Gestational Diabetes
