@@ -125,7 +125,7 @@ function buildClaudePrompt(applicationText) {
 
 CRITICAL RULES:
 1. BE DETAILED and thorough - include ALL relevant information provided
-2. Spell out ALL medical abbreviations completely (GD → Gestational Diabetes, C/S → Cesarean section, etc.)
+2. Spell out medical abbreviations (GD → Gestational Diabetes, C/S → Cesarean section, etc.)
 3. Use ⚠️ (solid yellow warning triangle emoji) for warnings/concerns
 4. Do NOT add any symbols before section headers (PERSONAL, PREGNANCY HISTORY, etc.) - keep them plain text
 5. For items like firearms, smoking, pets - include the full context (e.g., "Firearms present but locked safely and legally registered")
@@ -200,8 +200,8 @@ BACKGROUND
 
 ==============================================================================
 
-MEDICAL ABBREVIATIONS TO SPELL OUT COMPLETELY:
-- GD/GDM → Gestational Diabetes Mellitus
+MEDICAL ABBREVIATIONS TO SPELL OUT:
+- GD/GDM → Gestational Diabetes
 - C/S or CS → Cesarean section
 - VBAC → Vaginal Birth After Cesarean
 - SVD → Spontaneous Vaginal Delivery
