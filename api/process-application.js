@@ -126,7 +126,7 @@ function buildClaudePrompt(applicationText) {
 CRITICAL RULES:
 1. BE CONCISE - Only mention what's notable or concerning
 2. Spell out ALL medical abbreviations completely (GD → Gestational Diabetes, C/S → Cesarean section, etc.)
-3. Use (!!) for concerns/flags, *** GOLD STAR *** for exceptional items (use simple ASCII only)
+3. Use ⚠ (warning triangle) for concerns/flags, *** GOLD STAR *** for exceptional items
 4. If section is clean/unremarkable, just say "Clean" or "Nothing of note"
 5. Return valid JSON with formatted_summary, extracted_fields, AND is_gold_star boolean
 
@@ -181,10 +181,10 @@ Anything of note: [Only mention if there are: miscarriages, abortions, preterm d
 
 MEDICAL HISTORY
 [If completely clean: "Clean - no medical conditions of note, non-smoker, non-vaper"]
-[Otherwise list ONLY notable items with (!!) for concerns:
-(!!) [Condition - medication/status]
-(!!) [Smoking/vaping if applicable]
-(!!) [Dietary restrictions if notable]]
+[Otherwise list ONLY notable items with ⚠ for concerns:
+⚠ [Condition - medication/status]
+⚠ [Smoking/vaping if applicable]
+⚠ [Dietary restrictions if notable]]
 
 HOUSEHOLD
 [Write 1-2 sentences: "[Home type] with [#] adults and [#] children (ages). [Smoke-free status]. [Pet summary if any]. [Firearm status if present and concerning]"]
