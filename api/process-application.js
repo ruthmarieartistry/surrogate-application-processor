@@ -169,31 +169,31 @@ Generated: ${today}
 
 FLAGS: [List any flags here like "Medical Concerns", "Background Concerns", "Preterm History" - if no flags, write "None"]
 
->> PERSONAL
+PERSONAL
 Name: [First Last] ([Preferred name if different])
 Age: [##] | BMI: [##.#] | [State] | [Relationship Status] | [Employment if notable]
 Expected Compensation: [Amount from application]
 Surrogate Experience: [Either "Experienced Surrogate: [#] journeys" OR "First-time Surrogate"]
 
->> PREGNANCY HISTORY
+PREGNANCY HISTORY
 [#] Pregnancies | [#] Deliveries | [#] Cesarean sections
 Anything of note: [Only mention if there are: miscarriages, abortions, preterm deliveries, significant complications. If clean history of full-term vaginal births, just say "Clean pregnancy history"]
 
->> MEDICAL HISTORY
+MEDICAL HISTORY
 [If completely clean: "Clean - no medical conditions of note, non-smoker, non-vaper"]
 [Otherwise list ONLY notable items with (!!) for concerns:
 (!!) [Condition - medication/status]
 (!!) [Smoking/vaping if applicable]
 (!!) [Dietary restrictions if notable]]
 
->> HOUSEHOLD
+HOUSEHOLD
 [Write 1-2 sentences: "[Home type] with [#] adults and [#] children (ages). [Smoke-free status]. [Pet summary if any]. [Firearm status if present and concerning]"]
 
->> OB/GYN
+OB/GYN
 Birth Control: [Type or None]
 Anything of note: [ONLY mention breastfeeding if currently breastfeeding, or other concerns. Otherwise omit this line]
 
->> BACKGROUND
+BACKGROUND
 [Either "Clean" OR briefly note concerns for self/partner]
 
 ==============================================================================
