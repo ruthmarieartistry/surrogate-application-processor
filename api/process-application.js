@@ -167,6 +167,8 @@ CANDIDATE APPLICATION SUMMARY [ADD "*** GOLD STAR ***" if is_gold_star=true]
 Generated: ${today}
 ==============================================================================
 
+FLAGS: [List any flags here like "Medical Concerns", "Background Concerns", "Preterm History" - if no flags, write "None"]
+
 >> PERSONAL
 Name: [First Last] ([Preferred name if different])
 Age: [##] | BMI: [##.#] | [State] | [Relationship Status] | [Employment if notable]
