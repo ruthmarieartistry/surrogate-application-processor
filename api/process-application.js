@@ -126,10 +126,9 @@ function buildClaudePrompt(applicationText) {
 CRITICAL RULES:
 1. BE CONCISE - Only mention what's notable or concerning
 2. Spell out ALL medical abbreviations completely (GD → Gestational Diabetes, C/S → Cesarean section, etc.)
-3. Use ⚠ for warnings/concerns ONLY - do not add any icons or symbols to section headers
-4. Do NOT add bullets, emoji, or any symbols before section names (PERSONAL, PREGNANCY HISTORY, etc.)
-5. If section is clean/unremarkable, just say "Clean" or "Nothing of note"
-6. Return valid JSON with formatted_summary, extracted_fields, AND is_gold_star boolean
+3. Use ⚠ (warning triangle) for concerns/flags, *** GOLD STAR *** for exceptional items
+4. If section is clean/unremarkable, just say "Clean" or "Nothing of note"
+5. Return valid JSON with formatted_summary, extracted_fields, AND is_gold_star boolean
 
 APPLICATION DATA:
 ${applicationText}
@@ -164,7 +163,7 @@ GOLD STAR CRITERIA (all must be true):
 THE FORMATTED SUMMARY MUST USE THIS CONCISE TEMPLATE:
 
 ==============================================================================
-CANDIDATE APPLICATION SUMMARY [ADD "GOLD STAR" if is_gold_star=true]
+CANDIDATE APPLICATION SUMMARY [ADD "*** GOLD STAR ***" if is_gold_star=true]
 Generated: ${today}
 ==============================================================================
 
