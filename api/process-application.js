@@ -124,11 +124,11 @@ function buildClaudePrompt(applicationText) {
   return `You are processing a surrogacy application for Alcea Surrogacy. Extract and format a CONCISE summary - only include details that are notable or concerning. Assume healthy defaults.
 
 CRITICAL RULES:
-1. BE CONCISE - Only mention what's notable or concerning
+1. BE DETAILED and thorough - include ALL relevant information provided
 2. Spell out ALL medical abbreviations completely (GD → Gestational Diabetes, C/S → Cesarean section, etc.)
 3. Use ⚠️ (solid yellow warning triangle emoji) for warnings/concerns
 4. Do NOT add any symbols before section headers (PERSONAL, PREGNANCY HISTORY, etc.) - keep them plain text
-5. If section is clean/unremarkable, just say "Clean" or "Nothing of note"
+5. For items like firearms, smoking, pets - include the full context (e.g., "Firearms present but locked safely and legally registered")
 6. Return valid JSON with formatted_summary, extracted_fields, AND is_gold_star boolean
 
 APPLICATION DATA:
@@ -179,7 +179,7 @@ Surrogate Experience: [Either "Experienced Surrogate: [#] journeys" OR "First-ti
 
 PREGNANCY HISTORY
 [#] Pregnancies | [#] Deliveries | [#] Cesarean sections
-Anything of note: [Only mention if there are: miscarriages, abortions, preterm deliveries, significant complications. If clean history of full-term vaginal births, just say "Clean pregnancy history"]
+[Include ALL relevant details: miscarriages (with weeks), abortions, preterm deliveries (with weeks and circumstances), complications (gestational diabetes, preeclampsia, bleeding, etc.). Be specific with weeks and details provided.]
 
 MEDICAL HISTORY
 [If completely clean: "Clean - no medical conditions of note, non-smoker, non-vaper"]
@@ -189,7 +189,7 @@ MEDICAL HISTORY
 ⚠️ [Dietary restrictions if notable]]
 
 HOUSEHOLD
-[Write 1-2 sentences: "[Home type] with [#] adults and [#] children (ages). [Smoke-free status]. [Pet summary if any]. [Firearm status if present and concerning]"]
+[Write 2-3 detailed sentences including: "[Home type] with [#] adults and [#] children (ages). [Smoke-free status]. [Pet details with breeds/temperament if provided]. [Firearm status - if present, include whether locked safely and legally registered]"]
 
 OB/GYN
 Birth Control: [Type or None]
