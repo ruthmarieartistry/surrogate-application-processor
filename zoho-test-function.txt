@@ -1,0 +1,141 @@
+/**
+ * ZOHO CREATOR TEST FUNCTION
+ *
+ * This is a standalone function you can run to test the webhook
+ * WITHOUT needing to submit a full form.
+ *
+ * How to use:
+ * 1. Create a new Standalone Function in Zoho Creator
+ * 2. Paste this code
+ * 3. Click "Execute" to test
+ */
+
+void testWebhook() {
+
+    webhookUrl = "https://surrogate-application-processor.vercel.app/api/process-application";
+
+    // Sample application data
+    applicationText = "SURROGATE APPLICATION\n\n";
+    applicationText = applicationText + "PERSONAL INFORMATION:\n";
+    applicationText = applicationText + "Name: Jane Test Smith\n";
+    applicationText = applicationText + "Preferred Name: Jane\n";
+    applicationText = applicationText + "Pronouns: She/Her\n";
+    applicationText = applicationText + "Date of Birth: 01/15/1990\n";
+    applicationText = applicationText + "Phone: 555-1234\n";
+    applicationText = applicationText + "Height: 5' 6\"\n";
+    applicationText = applicationText + "Weight: 150 lbs\n";
+    applicationText = applicationText + "BMI: 24.2\n";
+    applicationText = applicationText + "State: California\n";
+    applicationText = applicationText + "Relationship Status: Married\n";
+    applicationText = applicationText + "Referral Source: Friend\n";
+    applicationText = applicationText + "Employment Status: Employed - Teacher at ABC School\n";
+    applicationText = applicationText + "Annual Salary: $50,000\n";
+    applicationText = applicationText + "Previous Surrogate: No\n\n";
+
+    applicationText = applicationText + "PREGNANCY HISTORY:\n";
+    applicationText = applicationText + "Number of Pregnancies: 2\n";
+    applicationText = applicationText + "Vaginal Deliveries: 2\n";
+    applicationText = applicationText + "C-Section Deliveries: 0\n";
+    applicationText = applicationText + "Uncomplicated Deliveries: 2\n";
+    applicationText = applicationText + "All Full-term: Yes\n";
+    applicationText = applicationText + "Miscarriages: 0\n";
+    applicationText = applicationText + "Abortions: 0\n";
+    applicationText = applicationText + "Pregnancy Complications: No\n\n";
+
+    applicationText = applicationText + "MEDICAL HISTORY:\n";
+    applicationText = applicationText + "Overall Good Health: Yes\n";
+    applicationText = applicationText + "Current Medications: None\n";
+    applicationText = applicationText + "Anxiety/Depression Medication: No\n";
+    applicationText = applicationText + "Smoking Status: Non-smoker\n";
+    applicationText = applicationText + "Vaping Status: Non-vaper\n";
+    applicationText = applicationText + "Recreational Drugs: Drug-free\n\n";
+
+    applicationText = applicationText + "HOUSEHOLD INFORMATION:\n";
+    applicationText = applicationText + "Type of Home: Single Family Home\n";
+    applicationText = applicationText + "Total People in Home: 4\n";
+    applicationText = applicationText + "Adults (excluding self/partner): 0\n";
+    applicationText = applicationText + "Children Under 18: 2\n";
+    applicationText = applicationText + "  Child 1: Emma Smith (DOB: 05/10/2015)\n";
+    applicationText = applicationText + "  Child 2: Noah Smith (DOB: 08/22/2018)\n";
+    applicationText = applicationText + "Smoke-Free Home: Yes\n";
+    applicationText = applicationText + "Pets: No pets\n";
+    applicationText = applicationText + "Firearms: No\n\n";
+
+    applicationText = applicationText + "OB/GYN INFORMATION:\n";
+    applicationText = applicationText + "Birth Control: IUD (Mirena)\n";
+    applicationText = applicationText + "Currently Breastfeeding: No\n";
+    applicationText = applicationText + "Last Menstrual Period: 10/01/2025\n";
+    applicationText = applicationText + "Last Pap Smear: 06/15/2025\n\n";
+
+    applicationText = applicationText + "BACKGROUND INFORMATION:\n";
+    applicationText = applicationText + "Criminal History (Self): No\n";
+    applicationText = applicationText + "Willing to Background Check: Yes\n";
+    applicationText = applicationText + "\nPartner Name: John Smith\n";
+    applicationText = applicationText + "Criminal History (Partner): No\n";
+    applicationText = applicationText + "Partner Willing to Background Check: Yes\n";
+
+    try {
+        // Prepare the payload
+        payload = Map();
+        payload.put("application_text", applicationText);
+        payload.put("application_id", "TEST-123");
+        payload.put("submitted_date", zoho.currentdate.toString("yyyy-MM-dd"));
+
+        info "=====================================";
+        info "SENDING TEST REQUEST TO WEBHOOK";
+        info "=====================================";
+        info "URL: " + webhookUrl;
+        info "Payload size: " + applicationText.length() + " characters";
+
+        // Call the Vercel function
+        response = invokeurl
+        [
+            url: webhookUrl
+            type: POST
+            parameters: payload
+            headers: {"Content-Type": "application/json"}
+        ];
+
+        info "=====================================";
+        info "RESPONSE RECEIVED";
+        info "=====================================";
+        info "Full response: " + response.toString();
+
+        // Check if the request was successful
+        if(response.get("success") == true) {
+
+            formattedSummary = response.get("summary");
+            extractedFields = response.get("fields");
+            isGoldStar = response.get("is_gold_star");
+
+            info "=====================================";
+            info "SUCCESS!";
+            info "=====================================";
+            info "Gold Star: " + isGoldStar;
+            info "";
+            info "FORMATTED SUMMARY:";
+            info formattedSummary;
+            info "";
+            info "EXTRACTED FIELDS:";
+            info "  Age: " + extractedFields.get("age");
+            info "  BMI: " + extractedFields.get("bmi");
+            info "  State: " + extractedFields.get("state");
+            info "  Experienced: " + extractedFields.get("experienced_surrogate");
+            info "  Medical Flags: " + extractedFields.get("has_medical_flags");
+            info "  Background Flags: " + extractedFields.get("has_background_flags");
+            info "  Preterm History: " + extractedFields.get("has_preterm_history");
+
+        } else {
+            info "=====================================";
+            info "FAILED!";
+            info "=====================================";
+            info "Response: " + response.toString();
+        }
+
+    } catch (e) {
+        info "=====================================";
+        info "ERROR!";
+        info "=====================================";
+        info "Error: " + e.toString();
+    }
+}

@@ -1,0 +1,41 @@
+/**
+ * ZOHO FIELD NAME EXTRACTOR
+ *
+ * This script will list all field names from your form submission
+ *
+ * HOW TO USE:
+ * 1. Go to your Surrogate Application form in Zoho Creator
+ * 2. Click Edit Form → Workflows
+ * 3. Create a NEW workflow: "On Successful Form Submission"
+ * 4. Name it: "List Field Names" (temporary - we'll delete this after)
+ * 5. Paste this script
+ * 6. Save and enable it
+ * 7. Submit a TEST application
+ * 8. Go to Setup → Developer Space → Script Logs
+ * 9. You'll see a list of ALL your field names!
+ * 10. Copy that list and send it to me
+ * 11. Delete this workflow after
+ */
+
+// Get all field values from the submitted form
+allFields = input.toMap();
+
+// Build a formatted list
+fieldList = "=== ALL FORM FIELD NAMES ===\n\n";
+
+for each fieldName in allFields.keys() {
+    fieldValue = allFields.get(fieldName);
+    fieldList = fieldList + "Field: " + fieldName + " = " + fieldValue + "\n";
+}
+
+// Log it so you can see it
+info fieldList;
+
+// Also send it as an email to yourself (OPTIONAL - replace with your email)
+// sendmail
+// [
+//     from: zoho.adminuserid
+//     to: "your-email@example.com"
+//     subject: "Zoho Field Names List"
+//     message: fieldList
+// ]

@@ -1,0 +1,88 @@
+void quickTest()
+{
+	webhookUrl = "https://surrogate-application-processor.vercel.app/api/process-application";
+	recordID = 4818629000000139011;
+
+	try
+	{
+		info "=== STARTING TEST ===";
+
+		// Fetch record
+		record = null;
+		for each rec in Full_Surrogate_Application[ID == recordID]
+		{
+			record = rec;
+		}
+
+		if(record == null)
+		{
+			info "ERROR: Record not found!";
+			return;
+		}
+
+		info "SUCCESS: Record found!";
+		info "Name: " + record.Legal_First_Name + " " + record.Legal_Last_Name;
+
+		// Build application text
+		applicationText = "SURROGATE APPLICATION\n\n";
+		applicationText = applicationText + "PERSONAL INFORMATION:\n";
+		applicationText = applicationText + "Name: " + record.Legal_First_Name + " " + record.Legal_Last_Name + "\n";
+		applicationText = applicationText + "BMI: " + record.BMI_High + "\n";
+		applicationText = applicationText + "State: " + record.State_of_Residence + "\n";
+		applicationText = applicationText + "\nPREGNANCY HISTORY:\n";
+		applicationText = applicationText + "Pregnancies: " + record.Number_of_Pregnancies + "\n";
+		applicationText = applicationText + "Vaginal Deliveries: " + record.How_Many_Vaginal_Deliveries + "\n";
+		applicationText = applicationText + "C-Sections: " + record.How_Many_C_Section_Deliveries + "\n";
+
+		info "Application text built";
+
+		// Prepare payload
+		payload = Map();
+		payload.put("application_text",applicationText);
+		payload.put("application_id",recordID);
+		payload.put("submitted_date",zoho.currentdate.toString("yyyy-MM-dd"));
+
+		info "Calling webhook...";
+
+		// Call webhook
+		response = invokeurl
+		[
+			url :webhookUrl
+			type :POST
+			parameters:payload
+			headers:{"Content-Type":"application/json"}
+		];
+
+		info "=== WEBHOOK RESPONSE ===";
+		info response.toString();
+
+		// Check response
+		if(response.get("success") == true)
+		{
+			info "=== SUCCESS! ===";
+
+			formattedSummary = response.get("summary");
+			info "Summary length: " + formattedSummary.length();
+
+			// Update the record
+			updateMap = Map();
+			updateMap.put("Candidate_Summary",formattedSummary);
+
+			info "Updating record...";
+			updateResult = zoho.creator.updateRecord("alceasurrogacy","Full_Surrogate_Application",recordID,updateMap);
+
+			info "=== UPDATE RESULT ===";
+			info updateResult.toString();
+		}
+		else
+		{
+			info "=== WEBHOOK FAILED ===";
+			info response.toString();
+		}
+	}
+	catch (e)
+	{
+		info "=== EXCEPTION ===";
+		info e.toString();
+	}
+}

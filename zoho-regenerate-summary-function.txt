@@ -1,0 +1,274 @@
+/**
+ * ZOHO CREATOR FUNCTION - REGENERATE SUMMARY
+ *
+ * Type: Custom Action / Button Function
+ * Usage: Attached to a button on the form/report to regenerate AI summary
+ *
+ * This function takes a record ID and regenerates the AI summary.
+ * Useful for updating existing records after data changes.
+ */
+
+void regenerateSummary(int recordID) {
+
+    webhookUrl = "https://surrogate-application-processor.vercel.app/api/process-application";
+
+    // Get the application name and form name (update these to match YOUR Zoho app)
+    appName = "alcea-surrogacy";  // Replace with your actual app link name
+    formName = "Full_Surrogate_Application";  // Replace with your actual form name
+
+    try {
+        // Fetch the record
+        info "Fetching record ID: " + recordID;
+        record = zoho.creator.getRecordById(appName, formName, recordID);
+
+        if(record == null) {
+            info "❌ Error: Record not found with ID " + recordID;
+            return;
+        }
+
+        info "✅ Record found - generating summary...";
+
+        // ============================================
+        // BUILD APPLICATION TEXT FROM RECORD DATA
+        // ============================================
+
+        applicationText = "SURROGATE APPLICATION\n\n";
+
+        // Personal Information Section
+        applicationText = applicationText + "PERSONAL INFORMATION:\n";
+        applicationText = applicationText + "Name: " + record.get("Legal_First_Name") + " " + record.get("Legal_Middle_Name") + " " + record.get("Legal_Last_Name") + "\n";
+        applicationText = applicationText + "Preferred Name: " + record.get("Nickname") + "\n";
+        applicationText = applicationText + "Pronouns: " + record.get("What_are_your_preferred_pronouns1") + "\n";
+        applicationText = applicationText + "Date of Birth: " + record.get("Your_Date_of_Birth") + "\n";
+        applicationText = applicationText + "Phone: " + record.get("Phone") + "\n";
+        applicationText = applicationText + "Height: " + record.get("Feet") + "' " + record.get("Inches") + '"\n';
+        applicationText = applicationText + "Weight: " + record.get("Weight_in_Pounds") + " lbs\n";
+        applicationText = applicationText + "BMI: " + record.get("BMI_High") + "\n";
+        applicationText = applicationText + "State: " + record.get("State_of_Residence") + "\n";
+        applicationText = applicationText + "Relationship Status: " + record.get("what_is_your_relationship_status") + "\n";
+        applicationText = applicationText + "Referral Source: " + record.get("How_did_you_hear_about_Alcea") + "\n";
+        applicationText = applicationText + "Employment Status: ";
+        if(record.get("Are_you_employed") == "Yes") {
+            applicationText = applicationText + "Employed - " + record.get("current_job_title") + " at " + record.get("current_employer") + "\n";
+            applicationText = applicationText + "Annual Salary: " + record.get("current_salary") + "\n";
+        } else {
+            applicationText = applicationText + "Not employed\n";
+        }
+        applicationText = applicationText + "Previous Surrogate: ";
+        if(record.get("Have_you_ever_been_a_surrogate_or_gone_through_IVF") == "Yes") {
+            applicationText = applicationText + "Yes\n";
+            applicationText = applicationText + "IVF Details: " + record.get("Please_list_the_name_and_address_of_the_IVF_clinic_and_include_any_other_important_information_lik") + "\n";
+        } else {
+            applicationText = applicationText + "No\n";
+        }
+        applicationText = applicationText + "\n";
+
+        // Pregnancy History Section
+        applicationText = applicationText + "PREGNANCY HISTORY:\n";
+        applicationText = applicationText + "Number of Pregnancies: " + record.get("Number_of_Pregnancies") + "\n";
+        applicationText = applicationText + "Vaginal Deliveries: " + record.get("How_Many_Vaginal_Deliveries") + "\n";
+        applicationText = applicationText + "C-Section Deliveries: " + record.get("How_Many_C_Section_Deliveries") + "\n";
+        applicationText = applicationText + "Uncomplicated Deliveries: " + record.get("Number_of_Uncomplicated_Deliveries") + "\n";
+        applicationText = applicationText + "All Full-term: " + record.get("All_Full_term_Deliveries") + "\n";
+        if(record.get("All_Full_term_Deliveries") == "No") {
+            applicationText = applicationText + "Preterm Details: " + record.get("Elaborate_on_Pre_term_Deliveries") + "\n";
+        }
+        applicationText = applicationText + "Miscarriages: " + record.get("Number_of_Miscarriages") + "\n";
+        applicationText = applicationText + "Abortions: " + record.get("Number_of_Abortions") + "\n";
+        if(record.get("Have_any_of_your_pregnancies_ended_in_a_miscarriage_or_termination") == "Yes") {
+            applicationText = applicationText + "Miscarriage/Termination Details: " + record.get("Please_elaborate_list_all_miscarriages_and_or_terminations_the_week_at_which_they_took_place_and_a") + "\n";
+        }
+        applicationText = applicationText + "Pregnancy Complications: " + record.get("Pregnancy_Complications") + "\n";
+        if(record.get("Pregnancy_Complications") == "Yes") {
+            applicationText = applicationText + "Complication Details: " + record.get("Please_elaborate_on_your_pregnancy_complications") + "\n";
+        }
+        if(record.get("Was_your_gestational_diabetes_controlled_purely_by_diet_no_medication_needed") != null && record.get("Was_your_gestational_diabetes_controlled_purely_by_diet_no_medication_needed") != "") {
+            applicationText = applicationText + "GD Diet Controlled: " + record.get("Was_your_gestational_diabetes_controlled_purely_by_diet_no_medication_needed") + "\n";
+        }
+        applicationText = applicationText + "\n";
+
+        // Medical History Section
+        applicationText = applicationText + "MEDICAL HISTORY:\n";
+        if(record.get("Are_you_in_overall_general_good_health") != null) {
+            applicationText = applicationText + "Overall Good Health: " + record.get("Are_you_in_overall_general_good_health") + "\n";
+        }
+        try {
+            if(record.get("Have_you_ever_been_diagnosed_with_any_of_the_following") != null && record.get("Have_you_ever_been_diagnosed_with_any_of_the_following") != "") {
+                applicationText = applicationText + "Past Diagnoses: " + record.get("Have_you_ever_been_diagnosed_with_any_of_the_following") + "\n";
+            }
+        } catch (ex) {
+            // Field doesn't exist, skip it
+        }
+        applicationText = applicationText + "Current Medications: ";
+        if(record.get("Currently_on_Medication") == "Yes") {
+            applicationText = applicationText + record.get("Current_Medication_s") + "\n";
+        } else {
+            applicationText = applicationText + "None\n";
+        }
+        applicationText = applicationText + "Anxiety/Depression Medication: ";
+        if(record.get("Currently_on_Medication_for_Anxiety_or_Depression") == "Yes") {
+            applicationText = applicationText + "Currently taking - " + record.get("What_Anxiety_or_Depression_Medication") + "\n";
+        } else if(record.get("Medication_for_Anxiety_or_Depression_in_Past_Six_Months") == "Yes") {
+            applicationText = applicationText + "Taken in past 6 months\n";
+        } else {
+            applicationText = applicationText + "No\n";
+        }
+        applicationText = applicationText + "Smoking Status: ";
+        if(record.get("Smoked_Tobacco_in_Last_Six_Months") == "Yes") {
+            applicationText = applicationText + "Yes - smoked in past 6 months\n";
+        } else {
+            applicationText = applicationText + "Non-smoker\n";
+        }
+        applicationText = applicationText + "Vaping Status: ";
+        if(record.get("Currently_Vapes") == "Yes") {
+            applicationText = applicationText + "Yes - currently vapes, willing to quit: " + record.get("Willing_to_Quit_Vaping_and_Abstain") + "\n";
+        } else {
+            applicationText = applicationText + "Non-vaper\n";
+        }
+        applicationText = applicationText + "Recreational Drugs: ";
+        if(record.get("Currently_Recreational_Drug_Free") == "Yes") {
+            applicationText = applicationText + "Drug-free\n";
+        } else {
+            applicationText = applicationText + "Uses recreational drugs\n";
+        }
+        applicationText = applicationText + "\n";
+
+        // Household Information Section
+        applicationText = applicationText + "HOUSEHOLD INFORMATION:\n";
+        applicationText = applicationText + "Type of Home: " + record.get("What_Type_of_Home_Do_You_Live_in") + "\n";
+        applicationText = applicationText + "Total People in Home: " + record.get("How_many_people_total_live_in_your_home") + "\n";
+        applicationText = applicationText + "Adults (excluding self/partner): " + record.get("How_many_adults_age_18_and_over_live_in_your_home") + "\n";
+        applicationText = applicationText + "Children Under 18: " + record.get("How_many_children_under_age_18_live_in_your_home") + "\n";
+        applicationText = applicationText + "Smoke-Free Home: " + record.get("Is_your_household_smoke_free") + "\n";
+        if(record.get("Is_your_household_smoke_free") == "No") {
+            applicationText = applicationText + "Smoking Details: " + record.get("In_what_way_is_your_household_not_smoke_free") + "\n";
+        }
+        applicationText = applicationText + "Pets: ";
+        if(record.get("Do_you_have_any_animals_pets_living_in_your_home") == "Yes") {
+            applicationText = applicationText + record.get("What_kinds_of_animals_pets") + "\n";
+            applicationText = applicationText + "Pet Details: " + record.get("Please_describe_your_animals_pets_breed_size_temperament_other_information") + "\n";
+        } else {
+            applicationText = applicationText + "No pets\n";
+        }
+        applicationText = applicationText + "Firearms: ";
+        if(record.get("Are_there_any_firearms_or_weapons_in_your_home") == "Yes") {
+            applicationText = applicationText + "Yes - Locked safely: " + record.get("Are_all_firearms_or_weapons_stored_and_locked_safely_away");
+            applicationText = applicationText + ", Legally registered: " + record.get("Are_all_firearms_in_your_home_legally_registered") + "\n";
+        } else {
+            applicationText = applicationText + "No\n";
+        }
+        applicationText = applicationText + "\n";
+
+        // OB/GYN Information Section
+        applicationText = applicationText + "OB/GYN INFORMATION:\n";
+        applicationText = applicationText + "Birth Control: ";
+        if(record.get("Are_you_on_any_form_of_birth_control") == "Yes") {
+            applicationText = applicationText + record.get("What_type_of_birth_control_are_you_using") + "\n";
+        } else {
+            applicationText = applicationText + "None\n";
+        }
+        applicationText = applicationText + "Currently Breastfeeding: ";
+        if(record.get("Are_you_currently_breastfeeding") == "Yes") {
+            applicationText = applicationText + "Yes\n";
+        } else {
+            applicationText = applicationText + "No\n";
+        }
+        applicationText = applicationText + "\n";
+
+        // Background Check Section
+        applicationText = applicationText + "BACKGROUND INFORMATION:\n";
+        applicationText = applicationText + "Criminal History (Self): ";
+        if(record.get("Have_you_and_or_your_partner_if_applicable_been_arrested_or_have_any_criminal_charges_pending_agai") == "Yes") {
+            applicationText = applicationText + "Yes - has arrests or pending charges\n";
+        } else {
+            applicationText = applicationText + "No\n";
+        }
+        if(record.get("Have_you_ever_been_treated_for_alcohol") == "Yes") {
+            applicationText = applicationText + "Alcohol/Drug Treatment or DUI: Yes\n";
+        }
+        applicationText = applicationText + "Willing to Background Check: " + record.get("Are_you_and_your_partner_if_applicable_willing_to_submit_to_a_criminal_history_check_including_but") + "\n";
+
+        // Partner Background if applicable
+        if(record.get("what_is_your_relationship_status") == "Married" || record.get("what_is_your_relationship_status") == "Partnered") {
+            applicationText = applicationText + "\nPartner Name: " + record.get("Spouse__Partner_s_Legal_First_Name") + " " + record.get("Spouse_Partner_s_Legal_Last_Name") + "\n";
+            applicationText = applicationText + "Criminal History (Partner): ";
+            if(record.get("Has_Spouse_Partner_ever_been_arrested_or_have_any_criminal_charges_pending_against_them") == "Yes") {
+                applicationText = applicationText + "Yes - has arrests or pending charges\n";
+            } else {
+                applicationText = applicationText + "No\n";
+            }
+        }
+        applicationText = applicationText + "\n";
+
+        // ============================================
+        // CALL THE WEBHOOK
+        // ============================================
+
+        payload = Map();
+        payload.put("application_text", applicationText);
+        payload.put("application_id", recordID);
+        payload.put("submitted_date", zoho.currentdate.toString("yyyy-MM-dd"));
+
+        info "🔄 Calling AI webhook to regenerate summary...";
+
+        response = invokeurl
+        [
+            url: webhookUrl
+            type: POST
+            parameters: payload
+            headers: {"Content-Type": "application/json"}
+        ];
+
+        if(response.get("success") == true) {
+
+            formattedSummary = response.get("summary");
+            extractedFields = response.get("fields");
+            isGoldStar = response.get("is_gold_star");
+
+            // Build flags list
+            flagsList = List();
+            if(extractedFields.get("has_medical_flags") == true) {
+                flagsList.add("Medical Concerns");
+            }
+            if(extractedFields.get("has_background_flags") == true) {
+                flagsList.add("Background Concerns");
+            }
+            if(extractedFields.get("has_preterm_history") == true) {
+                flagsList.add("Preterm History");
+            }
+
+            // Determine status
+            newStatus = "";
+            if(isGoldStar == true) {
+                newStatus = "⭐ Gold Star - Fast Track";
+            } else if(flagsList.size() > 0) {
+                newStatus = "🔍 Under Review";
+            } else {
+                newStatus = "🆕 New Application";
+            }
+
+            // Prepare update map
+            updateMap = Map();
+            updateMap.put("Candidate_Summary", formattedSummary);
+            updateMap.put("Application_Flags", flagsList);
+            updateMap.put("Application_Status", newStatus);
+
+            // Update the record
+            updateResult = zoho.creator.updateRecord(appName, formName, recordID, updateMap);
+
+            info "✅ Summary regenerated successfully!";
+            info "Status updated to: " + newStatus;
+
+            // Optional: Show success message to user
+            alert "✅ Summary regenerated successfully! Status: " + newStatus;
+
+        } else {
+            info "❌ Failed to regenerate summary: " + response.toString();
+            alert "❌ Failed to regenerate summary. Check logs for details.";
+        }
+
+    } catch (e) {
+        info "❌ Error: " + e.toString();
+        alert "❌ Error regenerating summary: " + e.toString();
+    }
+}

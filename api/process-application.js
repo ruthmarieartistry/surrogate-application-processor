@@ -170,6 +170,7 @@ Generated: ${today}
 >> PERSONAL
 Name: [First Last] ([Preferred name if different])
 Age: [##] | BMI: [##.#] | [State] | [Relationship Status] | [Employment if notable]
+Expected Compensation: [Amount from application]
 Surrogate Experience: [Either "Experienced Surrogate: [#] journeys" OR "First-time Surrogate"]
 
 >> PREGNANCY HISTORY

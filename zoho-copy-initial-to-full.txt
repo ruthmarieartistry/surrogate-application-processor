@@ -1,0 +1,58 @@
+/**
+ * ZOHO CREATOR DELUGE SCRIPT - COPY INITIAL TO FULL APPLICATION
+ *
+ * This script copies data from Initial_Surrogate_Screening_Form to Full_Surrogate_Application
+ * Trigger: On Successful Submit of Initial form (when approved)
+ */
+
+info "Starting copy process...";
+
+newApp = insert into Full_Surrogate_Application
+[
+    Legal_First_Name=input.Legal_First_Name
+    Legal_Last_Name=input.Legal_Last_Name
+    Nickname=input.Nickname
+    Email=input.Email
+    Phone=input.Phone
+    State_of_Residence=input.State_of_Residence
+    Your_Date_of_Birth=input.Your_Date_of_Birth
+    what_is_your_relationship_status=input.Relationship_Status
+    Legal_Ties_to_Ex_Spouse=input.Legal_Ties_to_Ex_Spouse
+    What_are_your_preferred_pronouns1=input.What_are_your_preferred_pronouns
+    Feet=input.Feet
+    Inches=input.Inches
+    Weight_in_Pounds=input.Weight_in_Pounds
+    BMI_High=input.BMI_High
+    Number_of_Pregnancies=input.Number_of_Pregnancies
+    How_Many_Vaginal_Deliveries=input.How_Many_Vaginal_Deliveries
+    How_Many_C_Section_Deliveries=input.How_Many_C_Section_Deliveries
+    Number_of_Uncomplicated_Deliveries=input.Number_of_Deliveries
+    All_Full_term_Deliveries=input.All_Full_term_Deliveries
+    Elaborate_on_Pre_term_Deliveries=input.Elaborate_on_Pre_term_Deliveries
+    Number_of_Miscarriages=input.Number_of_Miscarriages
+    Number_of_Abortions=input.Number_of_Abortions
+    Pregnancy_Complications=input.Pregnancy_Complications
+    Was_your_gestational_diabetes_controlled_purely_by_diet_no_medication_needed=input.GD_Diet_Controlled
+    Currently_on_Medication=input.Currently_on_Medication
+    Current_Medication_s=input.Current_Medication_s
+    Currently_on_Medication_for_Anxiety_or_Depression=input.Currently_on_Medication_for_Anxiety_or_Depression
+    What_Anxiety_or_Depression_Medication=input.What_Anxiety_or_Depression_Medication
+    Medication_for_Anxiety_or_Depression_in_Past_Six_Months=input.Medication_for_Anxiety_or_Depression_in_Past_Six_Months
+    Smoked_Tobacco_in_Last_Six_Months=input.Smoked_Tobacco_in_Last_Six_Months
+    Currently_Vapes=input.Currently_Vapes
+    Willing_to_Quit_Vaping_and_Abstain=input.Willing_to_Quit_Vaping_and_Abstain
+    Currently_Recreational_Drug_Free=input.Currently_Drug_Free
+    Any_Household_Members_Smoke=input.Any_Household_Members_Smoke
+    Are_the_smoking_members_of_your_household_willing_to_abstain_from_smoking_in_any_shared_spaces=input.Household_Smokers_Willing_to_Abstain_in_the_House
+    Section_8=input.Section_8
+    SNAP=input.SNAP
+    How_did_you_hear_about_Alcea=input.Referred_By1
+    Added_User=zoho.loginuser
+];
+
+if(newApp != null) {
+    info "Success! Full Application created with ID: " + newApp;
+    info "Applicant: " + input.Legal_First_Name + " " + input.Legal_Last_Name;
+} else {
+    info "Failed to create full application";
+}

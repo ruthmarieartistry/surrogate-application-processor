@@ -1,0 +1,57 @@
+// DEBUG TEST - Run this as a standalone function in Zoho Creator
+// Replace the record_id with your new application's ID
+
+record_id = "PUT_YOUR_RECORD_ID_HERE";
+
+try
+{
+    info "Starting debug test for record: " + record_id;
+
+    webhookUrl = "https://surrogate-application-processor.vercel.app/api/process-application";
+
+    // Build a simple test payload
+    applicationText = "SURROGATE APPLICATION\n\n";
+    applicationText = applicationText + "PERSONAL INFORMATION:\n";
+    applicationText = applicationText + "Name: Test Candidate\n";
+    applicationText = applicationText + "BMI: 24\n";
+    applicationText = applicationText + "State: California\n";
+
+    payload = Map();
+    payload.put("application_text", applicationText);
+    payload.put("application_id", record_id);
+    payload.put("submitted_date", zoho.currentdate.toString("yyyy-MM-dd"));
+
+    info "Payload created: " + payload;
+    info "Calling webhook...";
+
+    response = invokeurl
+    [
+        url: webhookUrl
+        type: POST
+        parameters: payload
+        headers: {"Content-Type":"application/json"}
+    ];
+
+    info "Response received: " + response;
+
+    if(response.get("success") == true)
+    {
+        formattedSummary = response.get("summary");
+        info "Summary extracted: " + formattedSummary;
+
+        // Try to update the record
+        for each rec in Full_Surrogate_Application[ID == record_id]
+        {
+            rec.Candidate_Summary = formattedSummary;
+            info "Record updated successfully!";
+        }
+    }
+    else
+    {
+        info "ERROR: Webhook returned success=false";
+    }
+}
+catch (e)
+{
+    info "EXCEPTION: " + e;
+}

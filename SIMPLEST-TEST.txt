@@ -1,0 +1,56 @@
+void quickTest()
+{
+info "Test started";
+webhookUrl = "https://surrogate-application-processor.vercel.app/api/process-application";
+record_id = 4818629000000139011;
+info "Variables set";
+record = null;
+for each rec in Full_Surrogate_Application[ID == record_id]
+{
+record = rec;
+}
+if(record == null)
+{
+info "Record not found";
+return;
+}
+info "Record found: " + record.Legal_First_Name;
+applicationText = "SURROGATE APPLICATION\n\nPERSONAL INFORMATION:\n";
+applicationText = applicationText + "Name: " + record.Legal_First_Name + " " + record.Legal_Last_Name + "\n";
+applicationText = applicationText + "BMI: " + record.BMI_High + "\n";
+applicationText = applicationText + "State: " + record.State_of_Residence + "\n";
+payload = Map();
+payload.put("application_text",applicationText);
+payload.put("application_id",record_id);
+payload.put("submitted_date",zoho.currentdate.toString("yyyy-MM-dd"));
+info "Calling webhook";
+response = invokeurl [url :webhookUrl type :POST parameters:payload headers:{"Content-Type":"application/json"}];
+info "Response: " + response.toString();
+if(response.get("success") == true)
+{
+formattedSummary = response.get("summary");
+info "Got summary, length: " + formattedSummary.length();
+info "Summary preview: " + formattedSummary.subString(0,100);
+info "Trying direct record update";
+updateCount = 0;
+for each rec in Full_Surrogate_Application[ID == record_id]
+{
+info "Found record to update, ID: " + rec.ID;
+info "Current summary value: " + rec.Candidate_Summary;
+rec.Candidate_Summary = formattedSummary;
+info "After update: " + rec.Candidate_Summary.subString(0,50);
+updateCount = updateCount + 1;
+}
+info "Updated " + updateCount + " record(s)";
+info "Re-fetching to verify...";
+for each rec in Full_Surrogate_Application[ID == record_id]
+{
+info "Verification - Candidate_Summary length: " + rec.Candidate_Summary.length();
+}
+info "Update complete - check the record!";
+}
+else
+{
+info "Failed: " + response.toString();
+}
+}

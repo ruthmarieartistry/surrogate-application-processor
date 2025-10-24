@@ -1,0 +1,70 @@
+/**
+ * SUPER SIMPLE TEST
+ * This just tests if the webhook works and can update a field
+ * No record fetching needed!
+ */
+
+void superSimpleTest()
+{
+	webhookUrl = "https://surrogate-application-processor.vercel.app/api/process-application";
+
+	// Simple test data
+	testData = "SURROGATE APPLICATION\n\n";
+	testData = testData + "PERSONAL INFORMATION:\n";
+	testData = testData + "Name: Amy Test Cooper\n";
+	testData = testData + "BMI: 24.5\n";
+	testData = testData + "State: Georgia\n";
+	testData = testData + "\nPREGNANCY HISTORY:\n";
+	testData = testData + "Pregnancies: 2\n";
+	testData = testData + "Vaginal Deliveries: 2\n";
+	testData = testData + "C-Sections: 0\n";
+
+	try
+	{
+		info "=== TESTING WEBHOOK ===";
+
+		// Prepare payload
+		payload = Map();
+		payload.put("application_text",testData);
+		payload.put("application_id","TEST-123");
+		payload.put("submitted_date","2025-10-24");
+
+		info "Calling webhook...";
+
+		// Call webhook
+		response = invokeurl
+		[
+			url :webhookUrl
+			type :POST
+			parameters:payload
+			headers:{"Content-Type":"application/json"}
+		];
+
+		info "=== WEBHOOK RESPONSE ===";
+		info response.toString();
+
+		if(response.get("success") == true)
+		{
+			info "=== SUCCESS! ===";
+			info "The webhook is working!";
+
+			summary = response.get("summary");
+			info "Summary (first 300 chars):";
+			info summary.subString(0,300);
+
+			info "";
+			info "The webhook works! Now the problem is just updating the field in Zoho.";
+			info "This means your FINAL-FIXED-SCRIPT.txt should work on form submit!";
+		}
+		else
+		{
+			info "=== FAILED ===";
+			info response.toString();
+		}
+	}
+	catch (e)
+	{
+		info "=== ERROR ===";
+		info e.toString();
+	}
+}

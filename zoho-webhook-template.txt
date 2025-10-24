@@ -1,0 +1,199 @@
+/**
+ * ZOHO CREATOR DELUGE SCRIPT - CUSTOMIZABLE TEMPLATE
+ *
+ * Add this script to your Surrogate Application form
+ * Trigger: On Successful Submit
+ *
+ * IMPORTANT: Replace ALL field names with YOUR actual field link names
+ */
+
+// ============================================
+// STEP 1: Configure your Vercel function URL
+// ============================================
+webhookUrl = "https://surrogate-application-processor.vercel.app/api/process-application";
+
+// ============================================
+// STEP 2: Gather all application form data
+// ============================================
+
+// TODO: Replace these field names with YOUR actual Zoho field link names
+// Look at your form fields and replace input.EXAMPLE_FIELD with input.YOUR_ACTUAL_FIELD
+
+applicationText = "SURROGATE APPLICATION\n\n";
+
+// Personal Information Section
+applicationText = applicationText + "PERSONAL INFORMATION:\n";
+applicationText = applicationText + "Name: " + input.First_Name + " " + input.Last_Name + "\n";
+applicationText = applicationText + "Age: " + input.Age + "\n";
+applicationText = applicationText + "BMI: " + input.BMI + "\n";
+applicationText = applicationText + "State: " + input.State + "\n";
+applicationText = applicationText + "Relationship Status: " + input.Relationship_Status + "\n";
+applicationText = applicationText + "Employment Status: " + input.Employment_Status + "\n";
+applicationText = applicationText + "Previous Surrogate: " + input.Previous_Surrogate + "\n";
+if(input.Previous_Surrogate == "Yes") {
+    applicationText = applicationText + "Previous Journey Details: " + input.Previous_Journey_Details + "\n";
+}
+applicationText = applicationText + "\n";
+
+// Pregnancy History Section
+applicationText = applicationText + "PREGNANCY HISTORY:\n";
+applicationText = applicationText + "Number of Pregnancies: " + input.Number_of_Pregnancies + "\n";
+applicationText = applicationText + "Number of Live Births: " + input.Number_of_Live_Births + "\n";
+applicationText = applicationText + "Number of Miscarriages: " + input.Number_of_Miscarriages + "\n";
+applicationText = applicationText + "Number of Abortions: " + input.Number_of_Abortions + "\n";
+applicationText = applicationText + "Pregnancy Complications: " + input.Pregnancy_Complications + "\n";
+applicationText = applicationText + "\n";
+
+// Medical History Section
+applicationText = applicationText + "MEDICAL HISTORY:\n";
+applicationText = applicationText + "Current Medical Conditions: " + input.Medical_Conditions + "\n";
+applicationText = applicationText + "Current Medications: " + input.Current_Medications + "\n";
+applicationText = applicationText + "Smoking Status: " + input.Smoking_Status + "\n";
+applicationText = applicationText + "Vaping Status: " + input.Vaping_Status + "\n";
+applicationText = applicationText + "\n";
+
+// Household Information Section
+applicationText = applicationText + "HOUSEHOLD INFORMATION:\n";
+applicationText = applicationText + "Type of Home: " + input.Home_Type + "\n";
+applicationText = applicationText + "Number of Adults in Home: " + input.Number_of_Adults + "\n";
+applicationText = applicationText + "Number of Children in Home: " + input.Number_of_Children + "\n";
+applicationText = applicationText + "Smoke-Free Home: " + input.Smoke_Free_Home + "\n";
+applicationText = applicationText + "Pets: " + input.Pets + "\n";
+applicationText = applicationText + "Firearms in Home: " + input.Firearms + "\n";
+applicationText = applicationText + "\n";
+
+// OB/GYN Information Section
+applicationText = applicationText + "OB/GYN INFORMATION:\n";
+applicationText = applicationText + "Current Birth Control: " + input.Birth_Control + "\n";
+applicationText = applicationText + "Currently Breastfeeding: " + input.Currently_Breastfeeding + "\n";
+applicationText = applicationText + "\n";
+
+// Background Check Section
+applicationText = applicationText + "BACKGROUND INFORMATION:\n";
+applicationText = applicationText + "Criminal History (Self): " + input.Criminal_History_Self + "\n";
+if(input.Criminal_History_Self == "Yes") {
+    applicationText = applicationText + "Details: " + input.Criminal_History_Details_Self + "\n";
+}
+if(input.Relationship_Status == "Married" || input.Relationship_Status == "Partnered") {
+    applicationText = applicationText + "Criminal History (Partner): " + input.Criminal_History_Partner + "\n";
+    if(input.Criminal_History_Partner == "Yes") {
+        applicationText = applicationText + "Details: " + input.Criminal_History_Details_Partner + "\n";
+    }
+}
+applicationText = applicationText + "\n";
+
+// ============================================
+// STEP 3: Call the webhook (Vercel function)
+// ============================================
+
+try {
+    // Prepare the payload
+    payload = {
+        "application_text": applicationText,
+        "application_id": input.ID,
+        "submitted_date": zoho.currentdate
+    };
+
+    // Call the Vercel function
+    response = invokeurl
+    [
+        url: webhookUrl
+        type: POST
+        parameters: payload.toString()
+        headers: {"Content-Type": "application/json"}
+    ];
+
+    // Check if the request was successful
+    if(response.get("success") == true) {
+
+        // ============================================
+        // STEP 4: Update the record with AI summary
+        // ============================================
+
+        formattedSummary = response.get("summary");
+        extractedFields = response.get("fields");
+        isGoldStar = response.get("is_gold_star");
+
+        // Update the candidate summary
+        input.Candidate_Summary = formattedSummary;
+
+        // Build flags list for multi-select field
+        flagsList = List();
+        if(extractedFields.get("has_medical_flags") == true) {
+            flagsList.add("Medical Concerns");
+        }
+        if(extractedFields.get("has_background_flags") == true) {
+            flagsList.add("Background Concerns");
+        }
+        if(extractedFields.get("has_preterm_history") == true) {
+            flagsList.add("Preterm History");
+        }
+
+        // Set the flags multi-select field
+        input.Application_Flags = flagsList;
+
+        // Set gold star checkbox
+        input.Is_Gold_Star_Applicant = isGoldStar;
+
+        // Auto-set Application Status based on results
+        if(isGoldStar == true) {
+            // Gold star applicants go to fast track
+            input.Application_Status = "⭐ Gold Star - Fast Track";
+
+        } else if(flagsList.size() > 0) {
+            // Flagged applicants go to review
+            input.Application_Status = "🔍 Under Review";
+
+        } else {
+            // Clean applicants but not gold star
+            input.Application_Status = "🆕 New Application";
+        }
+
+        info "AI Summary generated successfully for application " + input.ID;
+        info "Application status set to: " + input.Application_Status;
+
+    } else {
+        // Log error if webhook failed
+        info "Failed to generate AI summary: " + response.toString();
+    }
+
+} catch (e) {
+    // Handle any errors
+    info "Error calling AI summary webhook: " + e.toString();
+}
+
+// End of script
+
+/*
+============================================
+CUSTOMIZATION INSTRUCTIONS
+============================================
+
+1. Update the webhookUrl (already done - it's your deployed URL)
+
+2. Replace ALL field names in STEP 2 with your actual field link names:
+   - input.First_Name → your first name field
+   - input.Last_Name → your last name field
+   - input.Age → your age field
+   - input.BMI → your BMI field
+   - etc.
+
+3. Make sure these 4 fields exist in your form:
+   - Candidate_Summary (Multi-line text, read-only)
+   - Application_Flags (Multi-select, read-only)
+   - Is_Gold_Star_Applicant (Checkbox, read-only)
+   - Application_Status (Dropdown)
+
+4. Make sure your Application_Status dropdown has these exact values:
+   - 🆕 New Application
+   - ⭐ Gold Star - Fast Track
+   - 🔍 Under Review
+   - ✅ Approved for Matching
+   - 📞 Contacted
+   - 🤝 In Process
+   - ⏸️ On Hold
+   - ❌ Declined
+   - 📁 Archived
+
+5. Test with a sample application submission!
+*/
