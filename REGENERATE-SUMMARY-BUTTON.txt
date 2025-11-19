@@ -1,0 +1,459 @@
+// REGENERATE SUMMARY FUNCTION
+// This can be attached to a button on your form or run as a standalone function
+// Usage: Call this function with a record ID to regenerate the summary
+
+// Get the record ID from the current record context
+record_id = input.ID;
+
+webhookUrl = "https://surrogate-application-processor.vercel.app/api/process-application";
+
+// Fetch the record data
+for each rec in Full_Surrogate_Application[ID == record_id]
+{
+applicationText = "SURROGATE APPLICATION\n\n";
+applicationText = applicationText + "PERSONAL INFORMATION:\n";
+applicationText = applicationText + "Name: " + rec.Legal_First_Name + " " + rec.Legal_Middle_Name + " " + rec.Legal_Last_Name + "\n";
+applicationText = applicationText + "Preferred Name: " + rec.Nickname + "\n";
+applicationText = applicationText + "Pronouns: " + rec.What_are_your_preferred_pronouns1 + "\n";
+applicationText = applicationText + "Date of Birth: " + rec.Your_Date_of_Birth + "\n";
+applicationText = applicationText + "Phone: " + rec.Phone + "\n";
+applicationText = applicationText + "Height: " + rec.Feet + "' " + rec.Inches + '"\n';
+applicationText = applicationText + "Weight: " + rec.Weight_in_Pounds + " lbs\n";
+applicationText = applicationText + "BMI: " + rec.BMI_High + "\n";
+applicationText = applicationText + "State: " + rec.State_of_Residence + "\n";
+applicationText = applicationText + "Relationship Status: " + rec.what_is_your_relationship_status + "\n";
+applicationText = applicationText + "Referral Source: " + rec.How_did_you_hear_about_Alcea + "\n";
+applicationText = applicationText + "Expected Compensation: " + rec.expected_compensation + "\n";
+applicationText = applicationText + "Employment Status: ";
+if(rec.Are_you_employed == "Yes")
+{
+applicationText = applicationText + "Employed - " + rec.current_job_title + " at " + rec.current_employer + "\n";
+applicationText = applicationText + "Annual Salary: " + rec.current_salary + "\n";
+}
+else
+{
+applicationText = applicationText + "Not employed\n";
+}
+applicationText = applicationText + "Previous Surrogate: ";
+if(rec.Have_you_ever_been_a_surrogate_or_gone_through_IVF == "Yes")
+{
+applicationText = applicationText + "Yes\n";
+applicationText = applicationText + "IVF Details: " + rec.Please_list_the_name_and_address_of_the_IVF_clinic_and_include_any_other_important_information_lik + "\n";
+}
+else
+{
+applicationText = applicationText + "No\n";
+}
+applicationText = applicationText + "\n";
+applicationText = applicationText + "PREGNANCY HISTORY:\n";
+applicationText = applicationText + "Number of Pregnancies: " + rec.Number_of_Pregnancies + "\n";
+applicationText = applicationText + "Vaginal Deliveries: " + rec.How_Many_Vaginal_Deliveries + "\n";
+applicationText = applicationText + "C-Section Deliveries: " + rec.How_Many_C_Section_Deliveries + "\n";
+applicationText = applicationText + "Uncomplicated Deliveries: " + rec.Number_of_Uncomplicated_Deliveries + "\n";
+applicationText = applicationText + "All Full-term: " + rec.All_Full_term_Deliveries + "\n";
+if(rec.All_Full_term_Deliveries == "No")
+{
+applicationText = applicationText + "Preterm Details: " + rec.Elaborate_on_Pre_term_Deliveries + "\n";
+}
+applicationText = applicationText + "Miscarriages: " + rec.Number_of_Miscarriages + "\n";
+applicationText = applicationText + "Abortions: " + rec.Number_of_Abortions + "\n";
+if(rec.Have_any_of_your_pregnancies_ended_in_a_miscarriage_or_termination == "Yes")
+{
+applicationText = applicationText + "Miscarriage/Termination Details: " + rec.Please_elaborate_list_all_miscarriages_and_or_terminations_the_week_at_which_they_took_place_and_a + "\n";
+}
+applicationText = applicationText + "Pregnancy Complications: " + rec.Pregnancy_Complications + "\n";
+if(rec.Pregnancy_Complications == "Yes")
+{
+applicationText = applicationText + "Complication Details: " + rec.Please_elaborate_on_your_pregnancy_complications + "\n";
+}
+if(rec.Was_your_gestational_diabetes_controlled_purely_by_diet_no_medication_needed != null && rec.Was_your_gestational_diabetes_controlled_purely_by_diet_no_medication_needed != "")
+{
+applicationText = applicationText + "GD Diet Controlled: " + rec.Was_your_gestational_diabetes_controlled_purely_by_diet_no_medication_needed + "\n";
+}
+applicationText = applicationText + "\n";
+applicationText = applicationText + "MEDICAL HISTORY:\n";
+if(rec.Are_you_in_overall_general_good_health != null)
+{
+applicationText = applicationText + "Overall Good Health: " + rec.Are_you_in_overall_general_good_health + "\n";
+}
+try
+{
+if(rec.Have_you_ever_been_diagnosed_with_any_of_the_following != null && rec.Have_you_ever_been_diagnosed_with_any_of_the_following != "")
+{
+applicationText = applicationText + "Past Diagnoses: " + rec.Have_you_ever_been_diagnosed_with_any_of_the_following + "\n";
+}
+}
+catch (ex)
+{
+}
+applicationText = applicationText + "Current Medications: ";
+if(rec.Currently_on_Medication == "Yes")
+{
+applicationText = applicationText + rec.Current_Medication_s + "\n";
+}
+else
+{
+applicationText = applicationText + "None\n";
+}
+applicationText = applicationText + "Anxiety/Depression Medication: ";
+if(rec.Currently_on_Medication_for_Anxiety_or_Depression == "Yes")
+{
+applicationText = applicationText + "Currently taking - " + rec.What_Anxiety_or_Depression_Medication + "\n";
+}
+else if(rec.Medication_for_Anxiety_or_Depression_in_Past_Six_Months == "Yes")
+{
+applicationText = applicationText + "Taken in past 6 months\n";
+}
+else
+{
+applicationText = applicationText + "No\n";
+}
+applicationText = applicationText + "Smoking Status: ";
+if(rec.Smoked_Tobacco_in_Last_Six_Months == "Yes")
+{
+applicationText = applicationText + "Yes - smoked in past 6 months\n";
+}
+else
+{
+applicationText = applicationText + "Non-smoker\n";
+}
+applicationText = applicationText + "Vaping Status: ";
+if(rec.Currently_Vapes == "Yes")
+{
+applicationText = applicationText + "Yes - currently vapes, willing to quit: " + rec.Willing_to_Quit_Vaping_and_Abstain + "\n";
+}
+else
+{
+applicationText = applicationText + "Non-vaper\n";
+}
+applicationText = applicationText + "Recreational Drugs: ";
+if(rec.Currently_Recreational_Drug_Free == "Yes")
+{
+applicationText = applicationText + "Drug-free\n";
+}
+else
+{
+applicationText = applicationText + "Uses recreational drugs\n";
+}
+try
+{
+if(rec.Have_you_ever_tested_positive_for_non_prescribed_or_illicit_drugs_during_pregnancy == "Yes")
+{
+if(rec.What_were_the_circumstances_Please_describe_in_detail != null && rec.What_were_the_circumstances_Please_describe_in_detail != "")
+{
+applicationText = applicationText + "Tested Positive During Pregnancy: " + rec.What_were_the_circumstances_Please_describe_in_detail + "\n";
+}
+}
+}
+catch (ex)
+{
+}
+try
+{
+if(rec.Do_you_have_any_dietary_restrictions_or_requirements != null && rec.Do_you_have_any_dietary_restrictions_or_requirements != "")
+{
+applicationText = applicationText + "Dietary Restrictions: " + rec.Do_you_have_any_dietary_restrictions_or_requirements + "\n";
+}
+}
+catch (ex)
+{
+}
+try
+{
+if(rec.What_is_your_blood_type != null && rec.What_is_your_blood_type != "")
+{
+applicationText = applicationText + "Blood Type: " + rec.What_is_your_blood_type + "\n";
+}
+}
+catch (ex)
+{
+}
+applicationText = applicationText + "\n";
+applicationText = applicationText + "HOUSEHOLD INFORMATION:\n";
+applicationText = applicationText + "Type of Home: " + rec.What_Type_of_Home_Do_You_Live_in + "\n";
+applicationText = applicationText + "Total People in Home: " + rec.How_many_people_total_live_in_your_home + "\n";
+applicationText = applicationText + "Adults (excluding self/partner): " + rec.How_many_adults_age_18_and_over_live_in_your_home + "\n";
+applicationText = applicationText + "Children Under 18: " + rec.How_many_children_under_age_18_live_in_your_home + "\n";
+if(rec.How_many_children_under_age_18_live_in_your_home.toNumber() > 0)
+{
+if(rec.Child_1_First_and_Last_Name.first_name != null && rec.Child_1_First_and_Last_Name.first_name != "")
+{
+if(rec.Child_1_Date_of_Birth != null)
+{
+applicationText = applicationText + "  Child 1: " + rec.Child_1_First_and_Last_Name.first_name + " " + rec.Child_1_First_and_Last_Name.last_name + " (DOB: " + rec.Child_1_Date_of_Birth.toString("MM/dd/yyyy") + ")\n";
+}
+else
+{
+applicationText = applicationText + "  Child 1: " + rec.Child_1_First_and_Last_Name.first_name + " " + rec.Child_1_First_and_Last_Name.last_name + "\n";
+}
+}
+if(rec.Child_2_First_and_Last_Name.first_name != null && rec.Child_2_First_and_Last_Name.first_name != "")
+{
+if(rec.Child_2_Date_of_Birth != null)
+{
+applicationText = applicationText + "  Child 2: " + rec.Child_2_First_and_Last_Name.first_name + " " + rec.Child_2_First_and_Last_Name.last_name + " (DOB: " + rec.Child_2_Date_of_Birth.toString("MM/dd/yyyy") + ")\n";
+}
+else
+{
+applicationText = applicationText + "  Child 2: " + rec.Child_2_First_and_Last_Name.first_name + " " + rec.Child_2_First_and_Last_Name.last_name + "\n";
+}
+}
+if(rec.Child_3_First_and_Last_Name.first_name != null && rec.Child_3_First_and_Last_Name.first_name != "")
+{
+if(rec.Child_3_Date_of_Birth != null)
+{
+applicationText = applicationText + "  Child 3: " + rec.Child_3_First_and_Last_Name.first_name + " " + rec.Child_3_First_and_Last_Name.last_name + " (DOB: " + rec.Child_3_Date_of_Birth.toString("MM/dd/yyyy") + ")\n";
+}
+else
+{
+applicationText = applicationText + "  Child 3: " + rec.Child_3_First_and_Last_Name.first_name + " " + rec.Child_3_First_and_Last_Name.last_name + "\n";
+}
+}
+if(rec.Child_4_First_and_Last_Name.first_name != null && rec.Child_4_First_and_Last_Name.first_name != "")
+{
+if(rec.Child_4_Date_of_Birth != null)
+{
+applicationText = applicationText + "  Child 4: " + rec.Child_4_First_and_Last_Name.first_name + " " + rec.Child_4_First_and_Last_Name.last_name + " (DOB: " + rec.Child_4_Date_of_Birth.toString("MM/dd/yyyy") + ")\n";
+}
+else
+{
+applicationText = applicationText + "  Child 4: " + rec.Child_4_First_and_Last_Name.first_name + " " + rec.Child_4_First_and_Last_Name.last_name + "\n";
+}
+}
+if(rec.Child_5_First_and_Last_Name.first_name != null && rec.Child_5_First_and_Last_Name.first_name != "")
+{
+if(rec.Child_5_Date_of_Birth != null)
+{
+applicationText = applicationText + "  Child 5: " + rec.Child_5_First_and_Last_Name.first_name + " " + rec.Child_5_First_and_Last_Name.last_name + " (DOB: " + rec.Child_5_Date_of_Birth.toString("MM/dd/yyyy") + ")\n";
+}
+else
+{
+applicationText = applicationText + "  Child 5: " + rec.Child_5_First_and_Last_Name.first_name + " " + rec.Child_5_First_and_Last_Name.last_name + "\n";
+}
+}
+if(rec.Child_6_First_and_Last_Name.first_name != null && rec.Child_6_First_and_Last_Name.first_name != "")
+{
+if(rec.Child_6_Date_of_Birth != null)
+{
+applicationText = applicationText + "  Child 6: " + rec.Child_6_First_and_Last_Name.first_name + " " + rec.Child_6_First_and_Last_Name.last_name + " (DOB: " + rec.Child_6_Date_of_Birth.toString("MM/dd/yyyy") + ")\n";
+}
+else
+{
+applicationText = applicationText + "  Child 6: " + rec.Child_6_First_and_Last_Name.first_name + " " + rec.Child_6_First_and_Last_Name.last_name + "\n";
+}
+}
+}
+applicationText = applicationText + "Smoke-Free Home: " + rec.Is_your_household_smoke_free + "\n";
+if(rec.Is_your_household_smoke_free == "No")
+{
+applicationText = applicationText + "Smoking Details: " + rec.In_what_way_is_your_household_not_smoke_free + "\n";
+if(rec.Any_Household_Members_Smoke == "Yes")
+{
+applicationText = applicationText + "Members Willing to Abstain: " + rec.Are_the_smoking_members_of_your_household_willing_to_abstain_from_smoking_in_any_shared_spaces + "\n";
+}
+}
+applicationText = applicationText + "Pets: ";
+if(rec.Do_you_have_any_animals_pets_living_in_your_home == "Yes")
+{
+applicationText = applicationText + rec.What_kinds_of_animals_pets + "\n";
+applicationText = applicationText + "Pet Details: " + rec.Please_describe_your_animals_pets_breed_size_temperament_other_information + "\n";
+}
+else
+{
+applicationText = applicationText + "No pets\n";
+}
+applicationText = applicationText + "Firearms: ";
+if(rec.Are_there_any_firearms_or_weapons_in_your_home == "Yes")
+{
+applicationText = applicationText + "Yes - Locked safely: " + rec.Are_all_firearms_or_weapons_stored_and_locked_safely_away;
+applicationText = applicationText + ", Legally registered: " + rec.Are_all_firearms_in_your_home_legally_registered + "\n";
+}
+else
+{
+applicationText = applicationText + "No\n";
+}
+try
+{
+if(rec.Section_8 != null && rec.Section_8 != "")
+{
+applicationText = applicationText + "Section 8: " + rec.Section_8 + "\n";
+}
+}
+catch (ex)
+{
+}
+try
+{
+if(rec.SNAP != null && rec.SNAP != "")
+{
+applicationText = applicationText + "SNAP Benefits: " + rec.SNAP + "\n";
+}
+}
+catch (ex)
+{
+}
+applicationText = applicationText + "\n";
+applicationText = applicationText + "OB/GYN INFORMATION:\n";
+applicationText = applicationText + "Birth Control: ";
+if(rec.Are_you_on_any_form_of_birth_control == "Yes")
+{
+try
+{
+applicationText = applicationText + rec.What_type_of_birth_control_are_you_using;
+if(rec.What_type_of_hormonal_IUD_do_you_have != null && rec.What_type_of_hormonal_IUD_do_you_have != "")
+{
+applicationText = applicationText + " (" + rec.What_type_of_hormonal_IUD_do_you_have + ")";
+}
+applicationText = applicationText + "\n";
+}
+catch (ex)
+{
+applicationText = applicationText + "Yes\n";
+}
+}
+else
+{
+applicationText = applicationText + "None\n";
+}
+applicationText = applicationText + "Currently Breastfeeding: ";
+if(rec.Are_you_currently_breastfeeding == "Yes")
+{
+try
+{
+if(rec.When_do_you_plan_to_wean != null && rec.When_do_you_plan_to_wean != "")
+{
+applicationText = applicationText + "Yes - Plans to wean: " + rec.When_do_you_plan_to_wean + "\n";
+}
+else
+{
+applicationText = applicationText + "Yes\n";
+}
+}
+catch (ex)
+{
+applicationText = applicationText + "Yes\n";
+}
+}
+else
+{
+applicationText = applicationText + "No\n";
+}
+try
+{
+if(rec.What_is_the_start_date_of_your_last_menstrual_period != null)
+{
+applicationText = applicationText + "Last Menstrual Period: " + rec.What_is_the_start_date_of_your_last_menstrual_period.toString("MM/dd/yyyy") + "\n";
+}
+}
+catch (ex)
+{
+}
+try
+{
+if(rec.When_was_your_last_pap_smear != null)
+{
+applicationText = applicationText + "Last Pap Smear: " + rec.When_was_your_last_pap_smear.toString("MM/dd/yyyy") + "\n";
+}
+}
+catch (ex)
+{
+}
+try
+{
+if(rec.Current_OB_GYN_Name_and_Office_Address != null && rec.Current_OB_GYN_Name_and_Office_Address != "")
+{
+applicationText = applicationText + "Current OB/GYN: " + rec.Current_OB_GYN_Name_and_Office_Address + "\n";
+}
+}
+catch (ex)
+{
+}
+try
+{
+if(rec.Preferred_Delivery_Hospital_Name_Address_Website_URL != null && rec.Preferred_Delivery_Hospital_Name_Address_Website_URL != "")
+{
+applicationText = applicationText + "Preferred Hospital: " + rec.Preferred_Delivery_Hospital_Name_Address_Website_URL + "\n";
+}
+}
+catch (ex)
+{
+}
+applicationText = applicationText + "\n";
+applicationText = applicationText + "BACKGROUND INFORMATION:\n";
+applicationText = applicationText + "Criminal History (Self): ";
+if(rec.Have_you_and_or_your_partner_if_applicable_been_arrested_or_have_any_criminal_charges_pending_agai == "Yes")
+{
+applicationText = applicationText + "Yes - has arrests or pending charges\n";
+}
+else
+{
+applicationText = applicationText + "No\n";
+}
+if(rec.Have_you_ever_been_treated_for_alcohol == "Yes")
+{
+applicationText = applicationText + "Alcohol/Drug Treatment or DUI: Yes\n";
+}
+if(rec.Are_you_currently_involved_in_any_lawsuits == "Yes")
+{
+applicationText = applicationText + "Currently in Lawsuits: Yes\n";
+}
+if(rec.Have_you_ever_been_investigated_for_or_lost_custody_of_a_child_due_to_a_finding_of_child_abuse_or == "Yes")
+{
+applicationText = applicationText + "Child Abuse/Neglect Investigation: Yes\n";
+}
+if(rec.Have_you_ever_been_found_to_have_committed_or_been_accused_of_committing_family_violence == "Yes")
+{
+applicationText = applicationText + "Family Violence: Yes\n";
+}
+applicationText = applicationText + "Willing to Background Check: " + rec.Are_you_and_your_partner_if_applicable_willing_to_submit_to_a_criminal_history_check_including_but + "\n";
+if(rec.what_is_your_relationship_status == "Married" || rec.what_is_your_relationship_status == "Partnered")
+{
+applicationText = applicationText + "\nPartner Name: " + rec.Spouse__Partner_s_Legal_First_Name + " " + rec.Spouse_Partner_s_Legal_Last_Name + "\n";
+applicationText = applicationText + "Criminal History (Partner): ";
+if(rec.Has_Spouse_Partner_ever_been_arrested_or_have_any_criminal_charges_pending_against_them == "Yes")
+{
+applicationText = applicationText + "Yes - has arrests or pending charges\n";
+}
+else
+{
+applicationText = applicationText + "No\n";
+}
+if(rec.Has_Spouse_Partner_ever_been_treated_for_alcohol_or_drug_abuse_or_charged_or_convicted_of_driving == "Yes")
+{
+applicationText = applicationText + "Partner Alcohol/Drug Treatment or DUI: Yes\n";
+}
+if(rec.Is_your_Spouse_Partner_currenty_involved_in_any_lawsuits == "Yes")
+{
+applicationText = applicationText + "Partner Currently in Lawsuits: Yes\n";
+}
+if(rec.Has_your_Spouse_Partner_ever_been_investigated_for_or_lost_custody_of_a_child_due_to_a_finding_of == "Yes")
+{
+applicationText = applicationText + "Partner Child Abuse/Neglect Investigation: Yes\n";
+}
+if(rec.Has_your_Spouse_Partner_ever_been_found_to_have_committed_or_been_accused_of_committing_family_vio == "Yes")
+{
+applicationText = applicationText + "Partner Family Violence: Yes\n";
+}
+applicationText = applicationText + "Partner Willing to Background Check: " + rec.Are_you_willing_to_submit_to_a_criminal_background_check + "\n";
+}
+applicationText = applicationText + "\n";
+
+try
+{
+payload = Map();
+payload.put("application_text",applicationText);
+payload.put("application_id",record_id);
+payload.put("submitted_date",zoho.currentdate.toString("yyyy-MM-dd"));
+response = invokeurl [url :webhookUrl type :POST parameters:payload headers:{"Content-Type":"application/json"}];
+if(response.get("success") == true)
+{
+formattedSummary = response.get("summary");
+rec.Candidate_Summary = formattedSummary;
+info "Summary regenerated successfully!";
+}
+}
+catch (e)
+{
+info "Error: " + e;
+}
+}
